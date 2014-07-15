@@ -53,8 +53,8 @@ class Fishbowlapi:
 		return msg_received
 	def updatestatus(self, statuscode, status=""):
 		""" get status string from error code and update status """
+		self.statuscode = statuscode
 		self.status = getstatus(statuscode)
-		print self.status
 	def close(self):
 		""" close connection to fishbowl api """
 		self.stream.close()
@@ -89,9 +89,10 @@ class Fishbowlapi:
 		self.response = self.get_response()
 		# parse xml, check status
 		for element in xmlparse(self.response).iter():
-			if element.get('statusCode') is not None:
-				statuscode = element.get('statusCode')
-				self.updatestatus(statuscode)
+			if element.tag == 'AddInventoryRs':
+				if element.get('statusCode'):
+					statuscode = element.get('statusCode')
+					self.updatestatus(statuscode)
 
 # global functions
 def xmlparse(xml):
