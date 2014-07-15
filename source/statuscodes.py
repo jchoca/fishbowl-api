@@ -122,4 +122,6 @@ def getstatus(code):
         value = "Unknown QuickBooks class {0}."
     elif code == "4004":
         value = "PO does not have a PO number. Please turn on the auto-assign PO number option in the purchase order module options."
+    else
+        value = 'Unknown status'
     return value
