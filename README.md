@@ -1,6 +1,13 @@
 This is a wrapper (written in Python) for the Fishbowl Inventory API.
 
-Currently supports add inventory request.
+Currently supports add inventory request, cycle inventory count.
+
+add_inventory(part_number, quantity, UOM_ID, cost, location_tag_num[,log])
+
+cycle_inventory(part_number, new_qty, location_id[,log])
+
+Optional argument log defaults to False.  If set to True, a log file will be created in the immediate directory and changes appended to it.
+
 
 Example usage:
 ```
