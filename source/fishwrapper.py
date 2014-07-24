@@ -92,8 +92,8 @@ class Fishbowlapi:
 					self.updatestatus(statuscode)
 					# output information to log file if desired
 					if log == True:
-						f = open('inv_added_log.txt', 'a')
-						string_to_log = (str(datetime.now()) + ',' + str(partnum) + ',' + 
+						f = open('api_log.txt', 'a')
+						string_to_log = ("add_inv" + ',' + str(datetime.now()) + ',' + str(partnum) + ',' + 
 							             str(qty) + ',' + str(uomid) +
 							             str(cost) + ',' + str(loctagnum) + '\n')
 						f.write(string_to_log)
@@ -109,8 +109,19 @@ class Fishbowlapi:
 		self.response = self.get_response()
 		print self.response
 		# parse xml, check status
-		# for element in xmlparse(self.response).iter():
-		# 	pass
+		for element in xmlparse(self.response).iter():
+			if element.tag == 'CycleCountRs':
+				if element.get('statusCode'):
+					# check and update status
+					statuscode = element.get('statusCode')
+					self.updatestatus(statuscode)
+					# output information to log file if desired
+					if log == True:
+						f = open('api_log.txt', 'a')
+						string_to_log = ("cycle_inv" + ',' + str(datetime.now()) + ',' + str(partnum) + ',' +
+							             str(qty) + ',' + str(locationid) + '\n')
+						f.write(string_to_log)
+						f.close()
 
 # global functions
 def xmlparse(xml):
