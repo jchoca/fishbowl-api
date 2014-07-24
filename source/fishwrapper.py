@@ -3,6 +3,7 @@
 import socket
 import struct
 import hashlib
+import datetime
 from lxml import etree
 
 import xmlrequests
@@ -21,11 +22,6 @@ class Fishbowlapi:
 		self.port = port
 		self.username = username
 		self.password = hashlib.md5(password).digest().encode('base64').replace('\n', "")
-		self.stream = None
-		self.response = None
-		self.key = None
-		self.status = None
-		self.statuscode = None
 		# connect and login
 		self.login()
 	# below are methods used to login/generate requests
@@ -78,11 +74,11 @@ class Fishbowlapi:
 				statuscode = element.get("statusCode")
 				self.updatestatus(statuscode)
 	# request methods available to the user after instantiation
-	def add_inventory(self, partnum, qty, uomid, cost, loctagnum):
+	def add_inventory(self, partnum, qty, uomid, cost, loctagnum, log=False):
 		""" Method for adding inventory to Fishbowl """
 		# create XML request
 		xml = xmlrequests.AddInventory(str(partnum), str(qty), str(uomid),
-			                           str(cost), str(loctagnum), self.key).request
+			                           str(cost), str(loctagnum), key=self.key).request
 		# send request to fishbowl server
 		self.stream.send(msg(xml))
 		# get server response
@@ -91,8 +87,30 @@ class Fishbowlapi:
 		for element in xmlparse(self.response).iter():
 			if element.tag == 'AddInventoryRs':
 				if element.get('statusCode'):
+					# check and update status
 					statuscode = element.get('statusCode')
 					self.updatestatus(statuscode)
+					# output information to log file if desired
+					if log == True:
+						f = open('inv_added_log.txt', 'a')
+						string_to_log = (str(datetime.now()) + ',' + str(partnum) + ',' + 
+							             str(qty) + ',' + str(uomid) +
+							             str(cost) + ',' + str(loctagnum) + '\n')
+						f.write(string_to_log)
+						f.close()
+	def cycle_inventory(self, partnum, qty, locationid, log=False):
+		""" Cycle inventory of part in Fishbowl """
+		# create XML request
+		xml = xmlrequests.CycleCount(str(partnum), str(qty), str(locationid), key=self.key).request
+		print xml
+		# send request to fishbowl server
+		self.stream.send(msg(xml))
+		# get server response
+		self.response = self.get_response()
+		print self.response
+		# parse xml, check status
+		# for element in xmlparse(self.response).iter():
+		# 	pass
 
 # global functions
 def xmlparse(xml):

@@ -29,7 +29,7 @@ class Login(Request):
 		self.request = xmlmsg
 
 class AddInventory(Request):
-	def __init__(self, partnum, qty, uomid, cost, loctagnum, key=""):
+	def __init__(self, partnum, qty, uomid, cost, loctagnum, note="", tracking="", key=""):
 		Request.__init__(self, key)
 		if key == '':
 			raise TypeError("An API key was not provided (not enough aruments for " + 
@@ -44,10 +44,28 @@ class AddInventory(Request):
 		self.el_cost = etree.SubElement(self.el_addinventoryrq, 'Cost')
 		self.el_cost.text = cost
 		self.el_note = etree.SubElement(self.el_addinventoryrq, 'Note')
+		self.el_note.text = note
 		self.el_tracking = etree.SubElement(self.el_addinventoryrq, 'Tracking')
+		self.el_note.text = tracking
 		self.el_loctagnum = etree.SubElement(self.el_addinventoryrq, 'LocationTagNum')
 		self.el_loctagnum.text = loctagnum
 		self.el_tagnum = etree.SubElement(self.el_addinventoryrq, 'TagNum')
 		self.el_tagnum.text = '0'
+		xmlmsg = etree.tostring(self.el_fbixml, pretty_print=True)
+		self.request = xmlmsg
+
+class CycleCount(Request):
+	def __init__(self, partnum, qty, locationid, tracking="", key=""):
+		Request.__init__(self, key)
+		if key == '':
+			raise TypeError("An API key was not provided (not enough aruments for " + 
+				            self.__class__.__name__ + " request)")
+		self.el_cyclecountrq = etree.SubElement(self.el_fbimsgsrq, 'CycleCountRq')
+		self.el_partnum = etree.SubElement(self.el_cyclecountrq, 'PartNum')
+		self.el_partnum.text = partnum
+		self.el_quantity = etree.SubElement(self.el_cyclecountrq, 'Quantity')
+		self.el_quantity.text = qty
+		self.el_locationid = etree.SubElement(self.el_cyclecountrq, 'LocationID')
+		self.el_locationid.text = locationid
 		xmlmsg = etree.tostring(self.el_fbixml, pretty_print=True)
 		self.request = xmlmsg
