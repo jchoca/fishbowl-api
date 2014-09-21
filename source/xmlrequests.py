@@ -69,3 +69,15 @@ class CycleCount(Request):
 		self.el_locationid.text = locationid
 		xmlmsg = etree.tostring(self.el_fbixml, pretty_print=True)
 		self.request = xmlmsg
+
+class GetPOList(Request):
+	def __init__(self, locationgroup, key=""):
+		Request.__init__(self, key)
+		if key == '':
+			raise TypeError("An API key was not provided (not enough aruments for " + 
+				            self.__class__.__name__ + " request)")
+		self.el_getpolistrq = etree.SubElement(self.el_fbimsgsrq, 'GetPOListRq')
+		self.el_locationgroup = etree.SubElement(self.el_getpolistrq, 'LocationGroup')
+		self.el_locationgroup.text = locationgroup
+		xmlmsg = etree.tostring(self.el_fbixml, pretty_print=True)
+		self.request = xmlmsg	

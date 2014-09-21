@@ -102,7 +102,6 @@ class Fishbowlapi:
 		""" Cycle inventory of part in Fishbowl """
 		# create XML request
 		xml = xmlrequests.CycleCount(str(partnum), str(qty), str(locationid), key=self.key).request
-		print xml
 		# send request to fishbowl server
 		self.stream.send(msg(xml))
 		# get server response
@@ -122,6 +121,13 @@ class Fishbowlapi:
 							             str(qty) + ',' + str(locationid) + '\n')
 						f.write(string_to_log)
 						f.close()
+	def get_po_list(self, locationgroup):
+		""" Get list of POs """
+		xml = xmlrequests.GetPOList(str(locationgroup), key=self.key).request
+		self.stream.send(msg(xml))
+		self.response = self.get_response()
+		print self.response
+		return self.response
 
 # global functions
 def xmlparse(xml):
@@ -136,3 +142,7 @@ def msg(msg):
 	packed_length = struct.pack('>L', msg_length)
 	msg_to_send = packed_length + msg
 	return msg_to_send
+
+# for testing:
+# stream = Fishbowlapi('admin', 'admin', '10.0.2.2')
+# stream.get_po_list('SLC')
