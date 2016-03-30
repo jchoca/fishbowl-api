@@ -1,4 +1,4 @@
-This is a wrapper (written in Python) for the Fishbowl Inventory API.
+This is a client (written in Python) for the Fishbowl Inventory API.
 
 Currently supports add inventory request, cycle inventory count.
 
