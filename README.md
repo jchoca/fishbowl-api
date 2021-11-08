@@ -1,3 +1,5 @@
+# This repository is no longer maintained.
+
 This is a client (written in Python) for the Fishbowl Inventory API.
 
 Currently supports add inventory request, cycle inventory count.
