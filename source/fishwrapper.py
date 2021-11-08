@@ -3,6 +3,7 @@
 import socket
 import struct
 import hashlib
+import base64
 import datetime
 from lxml import etree
 
@@ -21,7 +22,7 @@ class Fishbowlapi:
 		self.host = host
 		self.port = port
 		self.username = username
-		self.password = hashlib.md5(password).digest().encode('base64').replace('\n', "")
+		self.password = base64.b64encode(hashlib.md5(password.encode()).digest()).decode()
 		# connect and login
 		self.login()
 	# below are methods used to login/generate requests
@@ -41,10 +42,10 @@ class Fishbowlapi:
 			try:
 				byte = self.stream.recv(1)
 				byte_count += 1
-				msg_received += byte
+				msg_received += byte.decode()
 			except socket.timeout:
 				self.status = "Error: Connection Timeout"
-				print self.status
+				print(self.status)
 				break
 		return msg_received
 	def updatestatus(self, statuscode, status=""):
@@ -93,7 +94,7 @@ class Fishbowlapi:
 					# output information to log file if desired
 					if log == True:
 						f = open('api_log.txt', 'a')
-						string_to_log = ("add_inv" + ',' + str(datetime.now()) + ',' + str(partnum) + ',' + 
+						string_to_log = ("add_inv" + ',' + str(datetime.now()) + ',' + str(partnum) + ',' +
 							             str(qty) + ',' + str(uomid) +
 							             str(cost) + ',' + str(loctagnum) + '\n')
 						f.write(string_to_log)
@@ -106,7 +107,7 @@ class Fishbowlapi:
 		self.stream.send(msg(xml))
 		# get server response
 		self.response = self.get_response()
-		print self.response
+		print(self.response)
 		# parse xml, check status
 		for element in xmlparse(self.response).iter():
 			if element.tag == 'CycleCountRs':
@@ -126,7 +127,7 @@ class Fishbowlapi:
 		xml = xmlrequests.GetPOList(str(locationgroup), key=self.key).request
 		self.stream.send(msg(xml))
 		self.response = self.get_response()
-		print self.response
+		print(self.response)
 		return self.response
 
 # global functions
